@@ -21,8 +21,59 @@ class Main{
 }
 
 class Predict{
-   
+
+	 public static ArrayList<String> miniJavaTokens = new ArrayList<String>(
+    Arrays.asList(
+      "(", ")",
+      "[", "]",
+      "{", "}",
+      ";", ".",
+      "=", "<=",
+      "!=", "+",
+      "-","*",
+      "/","&&",
+      "||","!",
+      "booleaan","class",
+      "interface","else",
+      "extends","false",
+      "if","while",
+      "int","length",
+      "main","new",
+      "public","return",
+      "static","String",
+      "this","true",
+      "System.out.println","void",
+      "#define"
+    ) );
+    public static ArrayList<String> myJavaTokens = new ArrayList<String>(
+     Arrays.asList(
+       "open", "close",
+       "open", "close",
+       "open", "close",
+       "semicolon", "dot",
+       "equal", "less",
+       "different", "plus",
+       "minus","times",
+       "by","and",
+       "or","not",
+       "booleaan","class",
+       "interface","else",
+       "extends","false",
+       "if","while",
+       "integer","length",
+       "main","new",
+       "public","return",
+       "static","string",
+       "this","true",
+       "print","void",
+       "define"
+     ) );
+
+  //  public static String sommething(ArrayList<String> )
    public static final int hamThreshold = 2;
+	 public static String getCorrectedToken() {
+				return null;
+		}
    public static ArrayList<String> getNextToken(String code) {
    	String[] result;
    	ArrayList<String> result2 = new ArrayList<String>();
@@ -35,7 +86,7 @@ class Predict{
          result = e.toString().split(":");
          result = result[2].split("...\n");
       	for(String a: result){
-		
+
 		result2.add(a.replaceAll("\\s+","").replaceAll("\n","").replaceAll("\"",""));
 	}
 	result2.remove(result2.size() - 1);
@@ -86,5 +137,4 @@ class Predict{
 	}
 
 
-} 
-
+}
