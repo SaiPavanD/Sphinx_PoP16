@@ -3,8 +3,8 @@ import curses
 import time
 from jnius import autoclass
 
-MainClass = autoclass("Predict");
-instance = MainClass();
+Predict = autoclass("Predict");
+# instance = MainClass();
 r = sr.Recognizer()
 
 def recognise(source):
@@ -44,7 +44,7 @@ def foo(window):
 		    	window.refresh()
 
 		    else:
-		    	s = instance.getWindow(text,s)
+		    	s = Predict.getWindow(text)
 		    	window.clear()
 		    	window.addstr(0, 0,s);
 		    	window.refresh()

@@ -9,10 +9,12 @@ import java.nio.charset.StandardCharsets;
 
 class Main{
     public static void main(String[] args){
-	String s = "class Factorial{    public static void main(String[] a){      "; // s should hold the entire code that was generated till now.
-	String test1 = "sistng"; // This is the token/word received from speech recognition.
-	String a = "class name open public static void main open string open close args close open print open open number 1 close close";
-	Predict.generateProcessed(a);
+	// String s = "class Factorial{    public static void main(String[] a){      "; // s should hold the entire code that was generated till now.
+	// String test1 = "sistng"; // This is the token/word received from speech recognition.
+	// String a = "name open public static void main open string open close args close open print open open number 1 close close";
+	// Predict.generateProcessed(a);
+  Predict.code = "class ab { public static";
+    System.out.println(Predict.getWindow("void"));
     }
 }
 
@@ -42,7 +44,7 @@ public class Predict{
       "public","return",
       "static","String",
       "this","true",
-      "System.out.println","void",
+      "// System.out.println","void",
       "#define"
     ) );
     public static ArrayList<String> myJavaTokens = new ArrayList<String>(
@@ -80,9 +82,10 @@ public class Predict{
 
    	String toAdd;
    	int index;
+    // System.out.println(code);
    	for(int i=0;i<split_tokens.length;i++){
    		next_tokens = Predict.getNextToken(code);
-      //System.out.println("VEdant : "+next_tokens+"\n");
+      // System.out.println("VEdant : "+next_tokens+"\n");
    		next_processed = new ArrayList<String>();
 
 
@@ -105,7 +108,7 @@ public class Predict{
         curr_token = "<IDENTIFIER>";
       }
 
-
+      // System.out.println(curr_token);
       if(next_tokens.contains(curr_token)){
 
         if(curr_token.equals("<IDENTIFIER>")){
@@ -122,10 +125,10 @@ public class Predict{
           if(prev_token.equals("<IDENTIFIER>")){
             code = code + split_tokens[i];          // If earlier token was also an identifier, do not add a space.
           } else {
-            System.out.println("Another error not yet handled");
+            // System.out.println("Another error not yet handled");
           }
         } else {
-          System.out.println("Error which is not yet handled");
+          // System.out.println("Error which is not yet handled");
         }
       }
 
@@ -143,7 +146,7 @@ public class Predict{
    		// 	continue;
    		// }
 
-   		// //System.out.println(next_processed);
+   		// //// System.out.println(next_processed);
    		// if(next_processed.size() != 0){
    		// 	index = Predict.hammingDistance(next_processed,split_tokens[i]);
    		// 	toAdd = next_tokens.get(index);
@@ -156,16 +159,16 @@ public class Predict{
    		// code = code + toAdd + " ";
 
    	}
-   	//System.out.println(code);
+   	//// System.out.println(code);
    	//next_tokens = Predict.getNextToken(code);
 
-    //System.out.println(code);
+    //// System.out.println(code);
    	// while(next_tokens != null && next_tokens.size() == 1 && !(next_tokens.get(0).equals("<IDENTIFIER>"))){
    	// 	code = code + next_tokens.get(0) + " ";
    	// 	next_tokens = Predict.getNextToken(code);
    	// }
-   	System.out.println(code);
-   	return null;
+   	// System.out.println(code);
+   	return code;
    }
 
    // End of code written by Srinidhi
@@ -177,13 +180,13 @@ public class Predict{
    	ArrayList<String> result2 = new ArrayList<String>();
       try {
         //ReInit();
-         //String s = "class Factorial{    public static void main(String[] a){       System.out.println(new Fac().ComputeFac((10+0)));    }}class Fac ";
+         //String s = "class Factorial{    public static void main(String[] a){       // System.out.println(new Fac().ComputeFac((10+0)));    }}class Fac ";
          InputStream stream = new ByteArrayInputStream(code.getBytes(StandardCharsets.UTF_8));
          Node root = new MiniJavaParser(stream).Goal();
       }
       catch (ParseException e) {
         result = e.toString().split(":");
-        System.out.println(code);
+        // System.out.println(code);
         result = result[2].split("...\n");
       	for(String a: result){
           String temp = a.replaceAll("\\s+","").replaceAll("\n","").replaceAll("\"","");
@@ -217,7 +220,7 @@ public class Predict{
 				min_val = val;
 			}
 		}
-		//System.out.println(score);
+		//// System.out.println(score);
 		return ret_val;
 	}
 	public static int LevenshteinDistance(String x, String y){
@@ -239,9 +242,10 @@ public class Predict{
 				 LevenshteinDistance(x.substring(0, x.length() - 1), y.substring(0, y.length() - 1)) + cost));
 	}
 
-  public static String getWindow(String curr, String hist){
+  public static String getWindow(String curr){
     String ret = "";
-    ret = hist+" "+Predict.generateProcessed(curr);
+    // System.out.println(code);
+    ret = Predict.generateProcessed(curr);
     return ret;
   }
 
