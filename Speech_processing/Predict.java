@@ -24,6 +24,10 @@ public class Predict{
 
    public static final int hamThreshold = 2; // Hamming distance threshold - might need to be changed later.
    public static String code = "";
+   public static ArrayList<String> id_names = new ArrayList<String>();
+   public static ArrayList<String> method_names = new ArrayList<String>(); 
+   public static ArrayList<String> class_names = new ArrayList<String>();
+   public static ArrayList<String> prev = new ArrayList<String>();
    public static ArrayList<String> miniJavaTokens = new ArrayList<String>(
     Arrays.asList(
       "(", ")",
@@ -70,6 +74,80 @@ public class Predict{
        "print","void",
        "define"
      ) );
+
+    // CODE WRITTEN BY NV AND REVANTH
+    public static void storeIds(String token, String flag){
+      if(flag == "class"){
+        class_names.add(token);
+      }
+      else if(flag == "method"){
+        method_names.add(token);
+      }
+      else if(flag == "identifier"){
+        id_names.add(token);
+      }
+      else{
+        ///    UNKNOWN ERROR.
+      }
+    }
+
+    public static void lastFour(String token){
+      if(prev.size() == 4){
+        prev.remove(0);
+      }
+      prev.add(token);
+    }
+
+    public static String checkHamming(String token){
+      // lastFour(token);
+      if(prev.get(3) == "declare" || prev.get(3) == "new" || prev.get(3) == "extends"){
+        int hamCheck = Predict.hammingDistance(class_names, token);
+        if(hamCheck != -1){
+          return class_names.get(hamCheck);
+        }
+        else{
+          return token;
+        }
+      }
+      else if(prev.get(3) == "."){
+        int hamCheck = Predict.hammingDistance(method_names, token);
+        if(hamCheck != -1){
+          return method_names.get(hamCheck);
+        }
+        else{
+          return token;
+        }
+      }
+      else{
+        int hamCheck = Predict.hammingDistance(id_names, token);
+        if(hamCheck != -1){
+          return id_names.get(hamCheck);
+        }
+        else{
+          return token;
+        }
+      }
+    }
+
+    public static String processId(String token){
+      if(prev.get(-1) == "class"){
+        storeIds(token, "class");
+        return token;
+      }
+      else if(prev.get(2) == "public"){
+        storeIds(token, "method");
+        return token;
+      }
+      else if(prev.get(2) == "declare"){
+        storeIds(token, "identifier");
+        return token;
+      }
+      else{
+        return checkHamming(token);
+      }
+    }
+    
+    ///  END OF CODE BY NV AND REVANTH
 
    // Code written by Srinidhi
    public static String generateProcessed(String s){
