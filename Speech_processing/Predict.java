@@ -91,6 +91,8 @@ public class Predict{
       }
     }
 
+    // Every time a token is processed , before adding it 
+    // to the final code, call lastFour(token)
     public static void lastFour(String token){
       if(prev.size() == 4){
         prev.remove(0);
@@ -98,8 +100,11 @@ public class Predict{
       prev.add(token);
     }
 
+
+    // this function is used to get the best identifier name 
+    // from existing identifiers.
     public static String checkHamming(String token){
-      // lastFour(token);
+      
       if(prev.get(3) == "declare" || prev.get(3) == "new" || prev.get(3) == "extends"){
         int hamCheck = Predict.hammingDistance(class_names, token);
         if(hamCheck != -1){
@@ -129,6 +134,8 @@ public class Predict{
       }
     }
 
+    // Once a token is finalised as an identifier, call the 
+    // function processID which either stores or returns the correct Identifer.
     public static String processId(String token){
       if(prev.get(-1) == "class"){
         storeIds(token, "class");
@@ -146,7 +153,7 @@ public class Predict{
         return checkHamming(token);
       }
     }
-    
+
     ///  END OF CODE BY NV AND REVANTH
 
    // Code written by Srinidhi
