@@ -96,7 +96,10 @@ public class Predict{
           next_processed.add(myJavaTokens.get(index));
 
       }
-
+      int hamCheck = Predict.hammingDistance(next_processed,split_tokens[i]);
+      if(hamCheck != -1){
+        split_tokens[i] = next_processed.get(hamCheck);
+      }
 
       // Set the current token
       if(myJavaTokens.contains(split_tokens[i])){
@@ -203,8 +206,8 @@ public class Predict{
 		String result = null;
 		ArrayList<Integer> score = new ArrayList<Integer>();
 		//int min_ind = -1;
-		int min_val = 100;
-		int ret_val = 0;
+		int min_val = hamThreshold;
+		int ret_val = -1;
 		for(String a: predicted){
 			int shorter = Math.min(a.length(), original.length());
     	int longer = Math.max(a.length(), original.length());
