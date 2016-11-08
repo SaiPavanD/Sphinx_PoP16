@@ -19,12 +19,14 @@ def recognise(source):
 
 def foo(window):
 	fileObject = open("answers/code.minijava", "w")
+	fileObject2 = open("answers/temp.txt","w")
 	# obtain audio from the microphone
 	s = ""
 	with sr.Microphone() as source:
 		while True:
 
 			text = recognise(source)
+			fileObject2.write(text)
 			if text != "null" :
 				if text	== "exit":
 					fileObject.write(s)
@@ -36,6 +38,7 @@ def foo(window):
 						if words[j] == "back":
 							i = s.rfind(" ")
 							s = s[:i]
+					Predict.assignCode(s)
 					window.clear()
 					window.addstr(0, 0,s);
 					window.refresh()
@@ -64,10 +67,12 @@ def foo(window):
 					window.addstr(0, 0,s);
 					window.refresh()
 				else:
-					s = Predict.getWindow(text)
+					s = Predict.getWindow(text,s)
 					window.clear()
 					window.addstr(0, 0,s);
 					window.refresh()
+
+	fileObject2.close()
 
 def main():
 	curses.wrapper(foo)

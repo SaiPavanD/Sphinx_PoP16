@@ -13,15 +13,18 @@ class Main{
 		// String test1 = "sistng"; // This is the token/word received from speech recognition.
 		// String a = "name open public static void main open string open close args close open print open open number 1 close close";
 		// Predict.generateProcessed(a);
-		Predict.code = "";
-		Predict.getWindow("class ab");
-		System.out.println(Predict.code);
+		//Predict.code = "";
+    // System.out.println(Predict.getWindow("class Factorial"));// s number 10 close \n class"));
+    // System.out.println(Predict.getWindow("s"));// number 10 close \n class"));
+    // System.out.println(Predict.getWindow("number 10 close"));// \n class"));
+		// System.out.println(Predict.getWindow("class asdasdsa"));// \n class"));
+		//System.out.println(Predict.code);
 	  	//Predict.code = "class ab { public static";
 	  	//Predict.getWindow("open public static");
 		//System.out.println(Predict.getWindow("void"));
 		//Predict.getWindow("main open spring open close ");
-		Predict.getWindow("under args hello");
-		System.out.println(Predict.code);
+		//Predict.getWindow("under args hello");
+		//System.out.println(Predict.code);
     	//Predict.getWindow("hello");
     }
 }
@@ -183,7 +186,17 @@ public class Predict{
    		next_processed = new ArrayList<String>();
 
 
+      // System.out.println(code);
+      // System.out.println(next_tokens);
       // Start of Code by Vedant
+      if(next_tokens == null){
+        // int last = code.length()-1;
+        // System.out.println(code.charAt(last));
+        code+="\n";
+        next_tokens = new ArrayList<String>();
+        next_tokens.add("class");
+        // continue;
+      } 
       for(int j=0;j<next_tokens.size();j++){
         index = miniJavaTokens.indexOf(next_tokens.get(j));
         if(index != -1)
@@ -397,9 +410,10 @@ public class Predict{
   public static void assignCode(String miniJavaCode){
   	Predict.code = miniJavaCode;
   }
-  public static String getWindow(String curr){
+  public static String getWindow(String curr, String hist){
     String ret = "";
     // System.out.println(code);
+    Predict.code = hist;
     ret = Predict.generateProcessed(curr);
     return ret;
   }
