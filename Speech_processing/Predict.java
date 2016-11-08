@@ -9,12 +9,20 @@ import java.nio.charset.StandardCharsets;
 
 class Main{
     public static void main(String[] args){
-	// String s = "class Factorial{    public static void main(String[] a){      "; // s should hold the entire code that was generated till now.
-	// String test1 = "sistng"; // This is the token/word received from speech recognition.
-	// String a = "name open public static void main open string open close args close open print open open number 1 close close";
-	// Predict.generateProcessed(a);
-  Predict.code = "class ab { public static";
-    System.out.println(Predict.getWindow("void"));
+		// String s = "class Factorial{    public static void main(String[] a){      "; // s should hold the entire code that was generated till now.
+		// String test1 = "sistng"; // This is the token/word received from speech recognition.
+		// String a = "name open public static void main open string open close args close open print open open number 1 close close";
+		// Predict.generateProcessed(a);
+		Predict.code = "";
+		Predict.getWindow("class ab");
+		System.out.println(Predict.code);
+	  	//Predict.code = "class ab { public static";
+	  	//Predict.getWindow("open public static");
+		//System.out.println(Predict.getWindow("void"));
+		//Predict.getWindow("main open spring open close ");
+		Predict.getWindow("under args hello");
+		System.out.println(Predict.code);
+    	//Predict.getWindow("hello");
     }
 }
 
@@ -28,6 +36,7 @@ public class Predict{
    public static ArrayList<String> method_names = new ArrayList<String>(); 
    public static ArrayList<String> class_names = new ArrayList<String>();
    public static ArrayList<String> prev = new ArrayList<String>();
+   public static ArrayList<String> idFonts = new ArrayList<String>(Arrays.asList("camel","title","under")); // Test which works better with speech.
    public static ArrayList<String> miniJavaTokens = new ArrayList<String>(
     Arrays.asList(
       "(", ")",
@@ -62,7 +71,7 @@ public class Predict{
        "minus","times",
        "by","and",
        "or","not",
-       "booleaan","class",
+       "boolean","class",
        "interface","else",
        "extends","false",
        "if","while",
@@ -77,13 +86,13 @@ public class Predict{
 
     // CODE WRITTEN BY NV AND REVANTH
     public static void storeIds(String token, String flag){
-      if(flag == "class"){
+      if(flag.equals("class")){
         class_names.add(token);
       }
-      else if(flag == "method"){
+      else if(flag.equals("method")){
         method_names.add(token);
       }
-      else if(flag == "identifier"){
+      else if(flag.equals("identifier")){
         id_names.add(token);
       }
       else{
@@ -105,7 +114,7 @@ public class Predict{
     // from existing identifiers.
     public static String checkHamming(String token){
       
-      if(prev.get(3) == "declare" || prev.get(3) == "new" || prev.get(3) == "extends"){
+      if(prev.get(3).equals("declare") || prev.get(3).equals("new") || prev.get(3).equals("extends")){
         int hamCheck = Predict.hammingDistance(class_names, token);
         if(hamCheck != -1){
           return class_names.get(hamCheck);
@@ -114,7 +123,7 @@ public class Predict{
           return token;
         }
       }
-      else if(prev.get(3) == "."){
+      else if(prev.get(3).equals(".")){
         int hamCheck = Predict.hammingDistance(method_names, token);
         if(hamCheck != -1){
           return method_names.get(hamCheck);
@@ -137,15 +146,15 @@ public class Predict{
     // Once a token is finalised as an identifier, call the 
     // function processID which either stores or returns the correct Identifer.
     public static String processId(String token){
-      if(prev.get(-1) == "class"){
+      if(prev.get(prev.size()-1).equals("class")){
         storeIds(token, "class");
         return token;
       }
-      else if(prev.get(2) == "public"){
+      else if(prev.get(2).equals("public")){
         storeIds(token, "method");
         return token;
       }
-      else if(prev.get(2) == "declare"){
+      else if(prev.get(2).equals("declare")){
         storeIds(token, "identifier");
         return token;
       }
@@ -167,10 +176,10 @@ public class Predict{
 
    	String toAdd;
    	int index;
-    // System.out.println(code);
+    
    	for(int i=0;i<split_tokens.length;i++){
    		next_tokens = Predict.getNextToken(code);
-      // System.out.println("VEdant : "+next_tokens+"\n");
+       //System.out.println("VEdant : "+next_tokens+"\n");
    		next_processed = new ArrayList<String>();
 
 
@@ -183,11 +192,63 @@ public class Predict{
       }
       int hamCheck = Predict.hammingDistance(next_processed,split_tokens[i]);
       if(hamCheck != -1){
-        split_tokens[i] = next_processed.get(hamCheck);
+        curr_token = next_tokens.get(hamCheck);
+        Predict.lastFour(curr_token);
+        code += " " + curr_token;
+      }
+      else if(split_tokens[i].equals("number")){
+      	i++;
+      	curr_token = split_tokens[i];  
+      	Predict.lastFour(curr_token); 
+      	code += " " + curr_token;   	
+      }
+      else{
+      	if(split_tokens[i].equals("declare")){
+      		Predict.lastFour("declare");
+      	}
+      	else{
+      		toAdd = "";
+      		hamCheck = Predict.hammingDistance(idFonts,split_tokens[i]);
+      		if(hamCheck == -1){
+      			for(int j=i;j<split_tokens.length;j++){		  			      			
+		  			toAdd += split_tokens[j];
+		  		}
+      		}
+      		else if(hamCheck == 0){
+      			char first;
+      			toAdd = toAdd + split_tokens[i+1];
+      			for(int j=i+2;j<split_tokens.length;j++){
+      				first = split_tokens[j].charAt(0);
+      				first = Character.toUpperCase(first);
+      				toAdd = new StringBuilder(toAdd).append(first).append(split_tokens[j].substring(1)).toString(); 
+      			}
+      			
+      		}
+      		else if(hamCheck == 1){
+      			char first;
+      			first = split_tokens[i+1].charAt(0);
+      			first = Character.toUpperCase(first);
+      			toAdd = new StringBuilder(toAdd).append(first).append(split_tokens[i+1].substring(1)).toString();
+      			for(int j=i+2;j<split_tokens.length;j++){		  			      			
+		  			toAdd += split_tokens[j];
+		  		}
+      		}
+      		else if(hamCheck == 2){
+      			toAdd += split_tokens[i+1];
+      			for(int j=i+2;j<split_tokens.length;j++){		  			      			
+		  			toAdd += "_" + split_tokens[j];
+		  		}
+      		}
+      		toAdd = Predict.processId(toAdd);
+		  	Predict.lastFour(toAdd);
+		  	code += " " + toAdd;
+		  	break;
+      		
+      	}
       }
 
       // Set the current token
-      if(myJavaTokens.contains(split_tokens[i])){
+      /*if(myJavaTokens.contains(split_tokens[i])){
         index = next_processed.indexOf(split_tokens[i]);
         curr_token = next_tokens.get(index);
       } else if (split_tokens[i].equals("number")){
@@ -220,7 +281,7 @@ public class Predict{
         }
       }
 
-      prev_token = curr_token;
+      prev_token = curr_token;*/
 
       // End of code by Vedant
 
@@ -248,14 +309,18 @@ public class Predict{
 
    	}
    	//// System.out.println(code);
-   	//next_tokens = Predict.getNextToken(code);
+   	next_tokens = Predict.getNextToken(code);
 
     //// System.out.println(code);
-   	// while(next_tokens != null && next_tokens.size() == 1 && !(next_tokens.get(0).equals("<IDENTIFIER>"))){
-   	// 	code = code + next_tokens.get(0) + " ";
-   	// 	next_tokens = Predict.getNextToken(code);
-   	// }
+   	 while(next_tokens != null && next_tokens.size() == 1 && !(next_tokens.get(0).equals("<IDENTIFIER>"))){
+   	 	code = code + next_tokens.get(0) + " ";
+   	 	Predict.lastFour(next_tokens.get(0));
+   	 	next_tokens = Predict.getNextToken(code);   	 	
+   	 }
    	// System.out.println(code);
+   	/*System.out.println("Class: "+class_names);
+    System.out.println("Methods: "+method_names);
+    System.out.println("ID: "+id_names);*/
    	return code;
    }
 
@@ -329,7 +394,9 @@ public class Predict{
 				 Math.min(LevenshteinDistance(x, y.substring(0, y.length() - 1)) + 1,
 				 LevenshteinDistance(x.substring(0, x.length() - 1), y.substring(0, y.length() - 1)) + cost));
 	}
-
+  public static void assignCode(String miniJavaCode){
+  	Predict.code = miniJavaCode;
+  }
   public static String getWindow(String curr){
     String ret = "";
     // System.out.println(code);
