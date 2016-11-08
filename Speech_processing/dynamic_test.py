@@ -58,7 +58,7 @@ def foo(window):
 					window.clear()
 					window.addstr(0, 0,s);
 					window.refresh()
-				elif text =="\n":
+				elif text =="\n" or text ==" " or text =="\t" :
 					s = s +"" + text
 					window.clear()
 					window.addstr(0, 0,s);
