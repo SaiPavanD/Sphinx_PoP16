@@ -18,7 +18,7 @@ def recognise(source):
 		return "null"
 
 def foo(window):
-	fileObject = open("answers/code.minijava", "w")
+	fileObject = open("answers/code.java", "w")
 	fileObject2 = open("answers/temp.txt","w")
 	# obtain audio from the microphone
 	s = ""
@@ -26,7 +26,9 @@ def foo(window):
 		while True:
 
 			text = recognise(source)
-			fileObject2.write(text)
+			fileObject2.write(text+'\n')
+			fileObject2.write(s+'\n')
+			
 			if text != "null" :
 				if text	== "exit":
 					fileObject.write(s)
@@ -63,6 +65,8 @@ def foo(window):
 					window.refresh()
 				elif text =="\n" or text ==" " or text =="\t" :
 					s = s +"" + text
+					if text == "\n":
+						s = Predict.getWindow(text,s);
 					window.clear()
 					window.addstr(0, 0,s);
 					window.refresh()

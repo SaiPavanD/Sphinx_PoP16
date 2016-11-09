@@ -9,23 +9,21 @@ import java.nio.charset.StandardCharsets;
 
 class Main{
     public static void main(String[] args){
-		// String s = "class Factorial{    public static void main(String[] a){      "; // s should hold the entire code that was generated till now.
-		// String test1 = "sistng"; // This is the token/word received from speech recognition.
-		// String a = "name open public static void main open string open close args close open print open open number 1 close close";
-		// Predict.generateProcessed(a);
-		//Predict.code = "";
-    // System.out.println(Predict.getWindow("class Factorial"));// s number 10 close \n class"));
-    // System.out.println(Predict.getWindow("s"));// number 10 close \n class"));
-    // System.out.println(Predict.getWindow("number 10 close"));// \n class"));
-		// System.out.println(Predict.getWindow("class asdasdsa"));// \n class"));
-		//System.out.println(Predict.code);
-	  	//Predict.code = "class ab { public static";
-	  	//Predict.getWindow("open public static");
-		//System.out.println(Predict.getWindow("void"));
-		//Predict.getWindow("main open spring open close ");
-		//Predict.getWindow("under args hello");
-		//System.out.println(Predict.code);
-    	//Predict.getWindow("hello");
+		Predict.getWindow("class title box",Predict.code);
+		Predict.getWindow("camel python snake",Predict.code);
+		Predict.getWindow("new box",Predict.code);
+		Predict.getWindow("dot world",Predict.code);
+		Predict.getWindow("close",Predict.code);
+		
+		Predict.getWindow("class box",Predict.code);
+		Predict.getWindow("open integer hello",Predict.code);
+		Predict.getWindow("public integer world",Predict.code);
+		Predict.getWindow("close",Predict.code);
+		//Predict.getWindow("a",Predict.code);
+		Predict.getWindow("return number 0",Predict.code);
+		Predict.getWindow("\n",Predict.code);
+		System.out.println(Predict.code);
+		System.out.println(Predict.getNextToken(Predict.code));
     }
 }
 
@@ -68,7 +66,7 @@ public class Predict{
        "open", "close",
        "open", "close",
        "open", "close",
-       "next", "dot",
+       "semicolon", "dot",
        "equal", "less",
        "different", "plus",
        "minus","times",
@@ -76,7 +74,7 @@ public class Predict{
        "or","not",
        "boolean","class",
        "interface","else",
-       "extends","false",
+       "extend","false",
        "if","while",
        "integer","length",
        "main","new",
@@ -87,7 +85,6 @@ public class Predict{
        "define"
      ) );
 
-    // CODE WRITTEN BY NV AND REVANTH
     public static void storeIds(String token, String flag){
       if(flag.equals("class")){
         class_names.add(token);
@@ -116,7 +113,6 @@ public class Predict{
     // this function is used to get the best identifier name 
     // from existing identifiers.
     public static String checkHamming(String token){
-      
       if(prev.get(3).equals("declare") || prev.get(3).equals("new") || prev.get(3).equals("extends")){
         int hamCheck = Predict.hammingDistance(class_names, token);
         if(hamCheck != -1){
@@ -166,9 +162,6 @@ public class Predict{
       }
     }
 
-    ///  END OF CODE BY NV AND REVANTH
-
-   // Code written by Srinidhi
    public static String generateProcessed(String s){
    	String[] split_tokens;
    	ArrayList<String> next_tokens;
@@ -179,165 +172,110 @@ public class Predict{
 
    	String toAdd;
    	int index;
-    
-   	for(int i=0;i<split_tokens.length;i++){
+   	int dot_flag = 0;
+   	// Handling enter
+   	if(split_tokens.length == 1 && split_tokens[0] == "\n"){
    		next_tokens = Predict.getNextToken(code);
-       //System.out.println("VEdant : "+next_tokens+"\n");
-   		next_processed = new ArrayList<String>();
-
-
-      // System.out.println(code);
-      // System.out.println(next_tokens);
-      // Start of Code by Vedant
-      if(next_tokens == null){
-        // int last = code.length()-1;
-        // System.out.println(code.charAt(last));
-        code+="\n";
-        next_tokens = new ArrayList<String>();
-        next_tokens.add("class");
-        // continue;
-      } 
-      for(int j=0;j<next_tokens.size();j++){
-        index = miniJavaTokens.indexOf(next_tokens.get(j));
-        if(index != -1)
-          next_processed.add(myJavaTokens.get(index));
-
-      }
-      int hamCheck = Predict.hammingDistance(next_processed,split_tokens[i]);
-      if(hamCheck != -1){
-        curr_token = next_tokens.get(hamCheck);
-        Predict.lastFour(curr_token);
-        code += " " + curr_token;
-      }
-      else if(split_tokens[i].equals("number")){
-      	i++;
-      	curr_token = split_tokens[i];  
-      	Predict.lastFour(curr_token); 
-      	code += " " + curr_token;   	
-      }
-      else{
-      	if(split_tokens[i].equals("declare")){
-      		Predict.lastFour("declare");
-      	}
-      	else{
-      		toAdd = "";
-      		hamCheck = Predict.hammingDistance(idFonts,split_tokens[i]);
-      		if(hamCheck == -1){
-      			for(int j=i;j<split_tokens.length;j++){		  			      			
-		  			toAdd += split_tokens[j];
-		  		}
-      		}
-      		else if(hamCheck == 0){
-      			char first;
-      			toAdd = toAdd + split_tokens[i+1];
-      			for(int j=i+2;j<split_tokens.length;j++){
-      				first = split_tokens[j].charAt(0);
-      				first = Character.toUpperCase(first);
-      				toAdd = new StringBuilder(toAdd).append(first).append(split_tokens[j].substring(1)).toString(); 
-      			}
-      			
-      		}
-      		else if(hamCheck == 1){
-      			char first;
-      			first = split_tokens[i+1].charAt(0);
-      			first = Character.toUpperCase(first);
-      			toAdd = new StringBuilder(toAdd).append(first).append(split_tokens[i+1].substring(1)).toString();
-      			for(int j=i+2;j<split_tokens.length;j++){		  			      			
-		  			toAdd += split_tokens[j];
-		  		}
-      		}
-      		else if(hamCheck == 2){
-      			toAdd += split_tokens[i+1];
-      			for(int j=i+2;j<split_tokens.length;j++){		  			      			
-		  			toAdd += "_" + split_tokens[j];
-		  		}
-      		}
-      		toAdd = Predict.processId(toAdd);
-		  	Predict.lastFour(toAdd);
-		  	code += " " + toAdd;
-		  	break;
-      		
-      	}
-      }
-
-      // Set the current token
-      /*if(myJavaTokens.contains(split_tokens[i])){
-        index = next_processed.indexOf(split_tokens[i]);
-        curr_token = next_tokens.get(index);
-      } else if (split_tokens[i].equals("number")){
-        curr_token = "<INTEGER_LITERAL>";
-      } else {
-        curr_token = "<IDENTIFIER>";
-      }
-
-      // System.out.println(curr_token);
-      if(next_tokens.contains(curr_token)){
-
-        if(curr_token.equals("<IDENTIFIER>")){
-          code = code + " " + split_tokens[i];      // If the token is an identifier, add whatever has been encountered.
-        } else if(curr_token.equals("<INTEGER_LITERAL>")){
-          code = code + " " + split_tokens[i+1];    // If the token is a number, add the next thing.
-          i++;
-        } else {
-          code = code + " " + curr_token;           // For a normal token, just add the same thing.
-        }
-
-      } else {
-        if(curr_token.equals("<IDENTIFIER>")){
-          if(prev_token.equals("<IDENTIFIER>")){
-            code = code + split_tokens[i];          // If earlier token was also an identifier, do not add a space.
-          } else {
-            // System.out.println("Another error not yet handled");
-          }
-        } else {
-          // System.out.println("Error which is not yet handled");
-        }
-      }
-
-      prev_token = curr_token;*/
-
-      // End of code by Vedant
-
-
-
-
-
-   		// if(split_tokens[i].equals("number")){
-   		// 	code = code + split_tokens[i+1] + " ";
-   		// 	i++;
-   		// 	continue;
-   		// }
-
-   		// //// System.out.println(next_processed);
-   		// if(next_processed.size() != 0){
-   		// 	index = Predict.hammingDistance(next_processed,split_tokens[i]);
-   		// 	toAdd = next_tokens.get(index);
-     //    //curr_token = next_tokens.get(index);
-   		// }
-   		// else {
-     //    toAdd = split_tokens[i];
-     //    //curr_token = "identifier";
-     //  }
-   		// code = code + toAdd + " ";
-
+   		if(next_tokens.contains(";")){
+   			code += ";";
+   		}
    	}
-   	//// System.out.println(code);
+   		// End of handling enter
+   	else{
+   
+	   	for(int i=0;i<split_tokens.length;i++){
+	   		next_tokens = Predict.getNextToken(code);
+	   		next_processed = new ArrayList<String>();
+		  if(next_tokens == null){
+		    code+="\n";
+		    next_tokens = new ArrayList<String>();
+		    next_tokens.add("class");
+		    // continue;
+		  } 
+		  for(int j=0;j<next_tokens.size();j++){
+		    index = miniJavaTokens.indexOf(next_tokens.get(j));
+		    if(index != -1)
+		      next_processed.add(myJavaTokens.get(index));
+		    else next_processed.add("will be handled");
+
+		  }
+		  int hamCheck = Predict.hammingDistance(next_processed,split_tokens[i]);
+		  if(hamCheck != -1){
+		    curr_token = next_tokens.get(hamCheck);
+		    if(miniJavaTokens.indexOf(curr_token) == 7) {
+		    	dot_flag = 1;
+		    }
+		    Predict.lastFour(curr_token);
+		    code += " " + curr_token;
+		  }
+		  else if(split_tokens[i].equals("number")){
+		  	i++;
+		  	curr_token = split_tokens[i];  
+		  	Predict.lastFour(curr_token); 
+		  	code += " " + curr_token;   	
+		  }
+		  else{
+		  	if(split_tokens[i].equals("declare")){
+		  		Predict.lastFour("declare");
+		  	}
+		  	else{
+		  		toAdd = "";
+		  		hamCheck = Predict.hammingDistance(idFonts,split_tokens[i]);
+		  		if(hamCheck == -1){
+		  			for(int j=i;j<split_tokens.length;j++){		  			      			
+			  			toAdd += split_tokens[j];
+			  		}
+		  		}
+		  		else if(hamCheck == 0){
+		  			char first;
+		  			toAdd = toAdd + split_tokens[i+1];
+		  			for(int j=i+2;j<split_tokens.length;j++){
+		  				first = split_tokens[j].charAt(0);
+		  				first = Character.toUpperCase(first);
+		  				toAdd = new StringBuilder(toAdd).append(first).append(split_tokens[j].substring(1)).toString(); 
+		  			}
+		  			
+		  		}
+		  		else if(hamCheck == 1){
+		  			char first;
+		  			first = split_tokens[i+1].charAt(0);
+		  			first = Character.toUpperCase(first);
+		  			toAdd = new StringBuilder(toAdd).append(first).append(split_tokens[i+1].substring(1)).toString();
+		  			for(int j=i+2;j<split_tokens.length;j++){		  			      			
+			  			toAdd += split_tokens[j];
+			  		}
+		  		}
+		  		else if(hamCheck == 2){
+		  			toAdd += split_tokens[i+1];
+		  			for(int j=i+2;j<split_tokens.length;j++){		  			      			
+			  			toAdd += "_" + split_tokens[j];
+			  		}
+		  		}
+		  		toAdd = Predict.processId(toAdd);
+			  	Predict.lastFour(toAdd);
+			  	code += " " + toAdd;
+			  	break;
+		  		
+		  	}
+		  }
+
+	   	}
+   	}
+   	for(int i=0;i<split_tokens.length;i++){
+   		if(dot_flag == 1){
+   			code += "(";
+   			break;
+   		}
+   	}
    	next_tokens = Predict.getNextToken(code);
 
-    //// System.out.println(code);
    	 while(next_tokens != null && next_tokens.size() == 1 && !(next_tokens.get(0).equals("<IDENTIFIER>"))){
    	 	code = code + next_tokens.get(0) + " ";
    	 	Predict.lastFour(next_tokens.get(0));
    	 	next_tokens = Predict.getNextToken(code);   	 	
    	 }
-   	// System.out.println(code);
-   	/*System.out.println("Class: "+class_names);
-    System.out.println("Methods: "+method_names);
-    System.out.println("ID: "+id_names);*/
    	return code;
    }
-
-   // End of code written by Srinidhi
 
 
    // Generates the list of next tokens by generating a parse exception.
@@ -345,14 +283,11 @@ public class Predict{
    	String[] result;
    	ArrayList<String> result2 = new ArrayList<String>();
       try {
-        //ReInit();
-         //String s = "class Factorial{    public static void main(String[] a){       // System.out.println(new Fac().ComputeFac((10+0)));    }}class Fac ";
          InputStream stream = new ByteArrayInputStream(code.getBytes(StandardCharsets.UTF_8));
          Node root = new MiniJavaParser(stream).Goal();
       }
       catch (ParseException e) {
         result = e.toString().split(":");
-        // System.out.println(code);
         result = result[2].split("...\n");
       	for(String a: result){
           String temp = a.replaceAll("\\s+","").replaceAll("\n","").replaceAll("\"","");
@@ -373,20 +308,19 @@ public class Predict{
 		int ret_val = -1;
 		for(String a: predicted){
 			int shorter = Math.min(a.length(), original.length());
-    	int longer = Math.max(a.length(), original.length());
-    	int val = 0;
-    	for (int i = 0; i < shorter; i++){
-    		if(a.charAt(i) != original.charAt(i))	val++;
-    	}
-    	//val += longer-shorter;
-    	val = Predict.LevenshteinDistance(a,original);
-    	score.add(val);
-    	if(val < min_val){
-    		ret_val = predicted.indexOf(a);
+    		int longer = Math.max(a.length(), original.length());
+    		int val = 0;
+			for (int i = 0; i < shorter; i++){
+				if(a.charAt(i) != original.charAt(i))	val++;
+			}
+			//val += longer-shorter;
+			val = Predict.LevenshteinDistance(a,original);
+			score.add(val);
+			if(val < min_val){
+				ret_val = predicted.indexOf(a);
 				min_val = val;
 			}
 		}
-		//// System.out.println(score);
 		return ret_val;
 	}
 	public static int LevenshteinDistance(String x, String y){
@@ -412,7 +346,6 @@ public class Predict{
   }
   public static String getWindow(String curr, String hist){
     String ret = "";
-    // System.out.println(code);
     Predict.code = hist;
     ret = Predict.generateProcessed(curr);
     return ret;

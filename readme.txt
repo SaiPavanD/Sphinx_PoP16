@@ -22,3 +22,8 @@ Also, need to test if plus comes as "+" or "plus".
 Need to handle the case when the next tokens have ";" and the user says "enter". Currently, "enter" is not sent to the java file, but we need to do so to handle ";" - This thing to be done in the end.
 
 Any queries, call Srinidhi/message on FB
+
+
+########### All bugs resolved
+Please test on Factorial.java
+Code will be logged to Code.java(not code.minijava)

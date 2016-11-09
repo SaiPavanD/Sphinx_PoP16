@@ -1,0 +1,1 @@
+ class box{ public static void main ( String [ ]  snake) { System.out.println (  new box( )  . hello( )) ; } } 

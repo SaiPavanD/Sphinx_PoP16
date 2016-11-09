@@ -1,0 +1,1 @@
+ class hello{ public static void main ( String [ ]  ok) { System.out.println (  1 ); } } 

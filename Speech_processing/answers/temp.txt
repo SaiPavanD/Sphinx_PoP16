@@ -1,5 +1,3 @@
-class factorialnullfnumber 10nullclose
-class mannullopen
-tabnulltabdeclare integernullnullb
-tabpublic integercamel computeintegernullxclosenull
-tabtabnulldeclare integer as
+
+
+
