@@ -11,11 +11,11 @@ class Main{
     public static void main(String[] args){
 		Predict.getWindow("class title box",Predict.code);
 		Predict.getWindow("camel python snake",Predict.code);
-		Predict.getWindow("new box",Predict.code);
+		Predict.getWindow("new box2",Predict.code);
 		Predict.getWindow("dot world",Predict.code);
 		Predict.getWindow("close",Predict.code);
-		
-		Predict.getWindow("class box",Predict.code);
+
+		Predict.getWindow("class box2",Predict.code);
 		Predict.getWindow("open integer hello",Predict.code);
 		Predict.getWindow("public integer world",Predict.code);
 		Predict.getWindow("close",Predict.code);
@@ -31,10 +31,10 @@ class Main{
 // The class used for processing and predicting.
 public class Predict{
 
-   public static final int hamThreshold = 2; // Hamming distance threshold - might need to be changed later.
+   public static final int disThreshold = 2; // Edit distance threshold - might need to be changed later.
    public static String code = "";
    public static ArrayList<String> id_names = new ArrayList<String>();
-   public static ArrayList<String> method_names = new ArrayList<String>(); 
+   public static ArrayList<String> method_names = new ArrayList<String>();
    public static ArrayList<String> class_names = new ArrayList<String>();
    public static ArrayList<String> prev = new ArrayList<String>();
    public static ArrayList<String> idFonts = new ArrayList<String>(Arrays.asList("camel","title","under")); // Test which works better with speech.
@@ -100,7 +100,7 @@ public class Predict{
       }
     }
 
-    // Every time a token is processed , before adding it 
+    // Every time a token is processed , before adding it
     // to the final code, call lastFour(token)
     public static void lastFour(String token){
       if(prev.size() == 4){
@@ -110,31 +110,31 @@ public class Predict{
     }
 
 
-    // this function is used to get the best identifier name 
+    // this function is used to get the best identifier name
     // from existing identifiers.
-    public static String checkHamming(String token){
+    public static String checkDistance(String token){
       if(prev.get(3).equals("declare") || prev.get(3).equals("new") || prev.get(3).equals("extends")){
-        int hamCheck = Predict.hammingDistance(class_names, token);
-        if(hamCheck != -1){
-          return class_names.get(hamCheck);
+        int disCheck = Predict.editDistance(class_names, token);
+        if(disCheck != -1){
+          return class_names.get(disCheck);
         }
         else{
           return token;
         }
       }
       else if(prev.get(3).equals(".")){
-        int hamCheck = Predict.hammingDistance(method_names, token);
-        if(hamCheck != -1){
-          return method_names.get(hamCheck);
+        int disCheck = Predict.editDistance(method_names, token);
+        if(disCheck != -1){
+          return method_names.get(disCheck);
         }
         else{
           return token;
         }
       }
       else{
-        int hamCheck = Predict.hammingDistance(id_names, token);
-        if(hamCheck != -1){
-          return id_names.get(hamCheck);
+        int disCheck = Predict.editDistance(id_names, token);
+        if(disCheck != -1){
+          return id_names.get(disCheck);
         }
         else{
           return token;
@@ -142,7 +142,7 @@ public class Predict{
       }
     }
 
-    // Once a token is finalised as an identifier, call the 
+    // Once a token is finalised as an identifier, call the
     // function processID which either stores or returns the correct Identifer.
     public static String processId(String token){
       if(prev.get(prev.size()-1).equals("class")){
@@ -158,7 +158,7 @@ public class Predict{
         return token;
       }
       else{
-        return checkHamming(token);
+        return checkDistance(token);
       }
     }
 
@@ -182,7 +182,7 @@ public class Predict{
    	}
    		// End of handling enter
    	else{
-   
+
 	   	for(int i=0;i<split_tokens.length;i++){
 	   		next_tokens = Predict.getNextToken(code);
 	   		next_processed = new ArrayList<String>();
@@ -191,7 +191,7 @@ public class Predict{
 		    next_tokens = new ArrayList<String>();
 		    next_tokens.add("class");
 		    // continue;
-		  } 
+		  }
 		  for(int j=0;j<next_tokens.size();j++){
 		    index = miniJavaTokens.indexOf(next_tokens.get(j));
 		    if(index != -1)
@@ -199,9 +199,9 @@ public class Predict{
 		    else next_processed.add("will be handled");
 
 		  }
-		  int hamCheck = Predict.hammingDistance(next_processed,split_tokens[i]);
-		  if(hamCheck != -1){
-		    curr_token = next_tokens.get(hamCheck);
+		  int disCheck = Predict.editDistance(next_processed,split_tokens[i]);
+		  if(disCheck != -1){
+		    curr_token = next_tokens.get(disCheck);
 		    if(miniJavaTokens.indexOf(curr_token) == 7) {
 		    	dot_flag = 1;
 		    }
@@ -210,9 +210,9 @@ public class Predict{
 		  }
 		  else if(split_tokens[i].equals("number")){
 		  	i++;
-		  	curr_token = split_tokens[i];  
-		  	Predict.lastFour(curr_token); 
-		  	code += " " + curr_token;   	
+		  	curr_token = split_tokens[i];
+		  	Predict.lastFour(curr_token);
+		  	code += " " + curr_token;
 		  }
 		  else{
 		  	if(split_tokens[i].equals("declare")){
@@ -220,34 +220,34 @@ public class Predict{
 		  	}
 		  	else{
 		  		toAdd = "";
-		  		hamCheck = Predict.hammingDistance(idFonts,split_tokens[i]);
-		  		if(hamCheck == -1){
-		  			for(int j=i;j<split_tokens.length;j++){		  			      			
+		  		disCheck = Predict.editDistance(idFonts,split_tokens[i]);
+		  		if(disCheck == -1){
+		  			for(int j=i;j<split_tokens.length;j++){
 			  			toAdd += split_tokens[j];
 			  		}
 		  		}
-		  		else if(hamCheck == 0){
+		  		else if(disCheck == 0){
 		  			char first;
 		  			toAdd = toAdd + split_tokens[i+1];
 		  			for(int j=i+2;j<split_tokens.length;j++){
 		  				first = split_tokens[j].charAt(0);
 		  				first = Character.toUpperCase(first);
-		  				toAdd = new StringBuilder(toAdd).append(first).append(split_tokens[j].substring(1)).toString(); 
+		  				toAdd = new StringBuilder(toAdd).append(first).append(split_tokens[j].substring(1)).toString();
 		  			}
-		  			
+
 		  		}
-		  		else if(hamCheck == 1){
+		  		else if(disCheck == 1){
 		  			char first;
 		  			first = split_tokens[i+1].charAt(0);
 		  			first = Character.toUpperCase(first);
 		  			toAdd = new StringBuilder(toAdd).append(first).append(split_tokens[i+1].substring(1)).toString();
-		  			for(int j=i+2;j<split_tokens.length;j++){		  			      			
+		  			for(int j=i+2;j<split_tokens.length;j++){
 			  			toAdd += split_tokens[j];
 			  		}
 		  		}
-		  		else if(hamCheck == 2){
+		  		else if(disCheck == 2){
 		  			toAdd += split_tokens[i+1];
-		  			for(int j=i+2;j<split_tokens.length;j++){		  			      			
+		  			for(int j=i+2;j<split_tokens.length;j++){
 			  			toAdd += "_" + split_tokens[j];
 			  		}
 		  		}
@@ -255,7 +255,7 @@ public class Predict{
 			  	Predict.lastFour(toAdd);
 			  	code += " " + toAdd;
 			  	break;
-		  		
+
 		  	}
 		  }
 
@@ -272,7 +272,7 @@ public class Predict{
    	 while(next_tokens != null && next_tokens.size() == 1 && !(next_tokens.get(0).equals("<IDENTIFIER>"))){
    	 	code = code + next_tokens.get(0) + " ";
    	 	Predict.lastFour(next_tokens.get(0));
-   	 	next_tokens = Predict.getNextToken(code);   	 	
+   	 	next_tokens = Predict.getNextToken(code);
    	 }
    	return code;
    }
@@ -300,11 +300,11 @@ public class Predict{
       return null;
    }
 
-	public static int hammingDistance(ArrayList<String> predicted, String original){
+	public static int editDistance(ArrayList<String> predicted, String original){
 		String result = null;
 		ArrayList<Integer> score = new ArrayList<Integer>();
 		//int min_ind = -1;
-		int min_val = hamThreshold;
+		int min_val = disThreshold;
 		int ret_val = -1;
 		for(String a: predicted){
 			int shorter = Math.min(a.length(), original.length());
