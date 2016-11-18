@@ -1,4 +1,23 @@
 // package Speech_processing;
+/*
+class Factorial{
+    public static void main(String[] a){
+        System.out.println(new Fac().ComputeFac((10+0)));
+    }
+}
+
+class Fac {
+    public int ComputeFac(int num){
+        int num_aux ;
+        num_aux = 0;
+        if (num <= 0)
+            num_aux = (1+0) ;
+        if(!(num <=0))
+            num_aux = num * (this.ComputeFac(num-1)) ;
+        return num_aux ;
+    }
+}
+*/
 
 import syntaxtree.*;
 import visitor.*;
@@ -9,21 +28,45 @@ import java.nio.charset.StandardCharsets;
 
 class Main{
     public static void main(String[] args){
-		Predict.getWindow("class title box",Predict.code);
-		Predict.getWindow("camel python snake",Predict.code);
-		Predict.getWindow("new box2",Predict.code);
-		Predict.getWindow("dot world",Predict.code);
+		Predict.getWindow("class title factorial",Predict.code);
+		Predict.getWindow("camel main args",Predict.code);
+		Predict.getWindow("new title fac",Predict.code);
+		Predict.getWindow("dot camel compute fac",Predict.code);
+    Predict.getWindow("open number 10 plus number 0",Predict.code);
 		Predict.getWindow("close",Predict.code);
 
-		Predict.getWindow("class box2",Predict.code);
-		Predict.getWindow("open integer hello",Predict.code);
-		Predict.getWindow("public integer world",Predict.code);
-		Predict.getWindow("close",Predict.code);
-		//Predict.getWindow("a",Predict.code);
-		Predict.getWindow("return number 0",Predict.code);
-		Predict.getWindow("\n",Predict.code);
-		System.out.println(Predict.code);
-		System.out.println(Predict.getNextToken(Predict.code));
+		Predict.getWindow("class title fac",Predict.code);
+		Predict.getWindow("open public integer camel compute fac",Predict.code);
+    Predict.getWindow("declare integer num",Predict.code);
+    Predict.getWindow("close ",Predict.code);
+
+    Predict.getWindow("declare integer under num aux",Predict.code);
+    Predict.getWindow("assign under num aux",Predict.code);
+    Predict.getWindow("number 0 semicolon",Predict.code);
+    Predict.getWindow("if open num",Predict.code);
+    Predict.getWindow("less number 0 close ",Predict.code);
+
+    Predict.getWindow("assign under num aux",Predict.code);
+    Predict.getWindow("open number 1 plus number 0 close semicolon",Predict.code);
+    Predict.getWindow("if open not open num",Predict.code);
+    Predict.getWindow("less number 0 close close",Predict.code);
+		Predict.getWindow("assign under num aux",Predict.code);
+		Predict.getWindow("num",Predict.code);
+     Predict.getWindow("times open this dot camel compute fac",Predict.code);
+        Predict.getWindow("num",Predict.code);
+            Predict.getWindow("minus number 1",Predict.code);
+        Predict.getWindow("close close",Predict.code);
+
+      Predict.getWindow("return under num aux",Predict.code);
+      Predict.getWindow("semicolon",Predict.code);
+
+		Predict.getWindow("close ",Predict.code);
+  //   Predict.getWindow("assign hello",Predict.code);
+  //   Predict.getWindow("assign hello",Predict.code);
+  //   Predict.getWindow("\n",Predict.code);
+		// Predict.getWindow("\n",Predict.code);
+		// System.out.println(Predict.code);
+		// System.out.println(Predict.getNextToken(Predict.code));
     }
 }
 
@@ -58,7 +101,7 @@ public class Predict{
       "public","return",
       "static","String",
       "this","true",
-      "// System.out.println","void",
+      "System.out.println","void",
       "#define"
     ) );
     public static ArrayList<String> myJavaTokens = new ArrayList<String>(
@@ -173,6 +216,8 @@ public class Predict{
    	String toAdd;
    	int index;
    	int dot_flag = 0;
+    int var_flag = 0,assign_flag = 0;
+
    	// Handling enter
    	if(split_tokens.length == 1 && split_tokens[0] == "\n"){
    		next_tokens = Predict.getNextToken(code);
@@ -192,6 +237,7 @@ public class Predict{
 		    next_tokens.add("class");
 		    // continue;
 		  }
+      // System.out.println(next_tokens);
 		  for(int j=0;j<next_tokens.size();j++){
 		    index = miniJavaTokens.indexOf(next_tokens.get(j));
 		    if(index != -1)
@@ -199,6 +245,9 @@ public class Predict{
 		    else next_processed.add("will be handled");
 
 		  }
+      // System.out.println(split_tokens[i]);
+      // System.out.println(next_processed);
+      // System.out.println("\n\n\n");
 		  int disCheck = Predict.editDistance(next_processed,split_tokens[i]);
 		  if(disCheck != -1){
 		    curr_token = next_tokens.get(disCheck);
@@ -214,6 +263,10 @@ public class Predict{
 		  	Predict.lastFour(curr_token);
 		  	code += " " + curr_token;
 		  }
+      else if(split_tokens[i].equals("assign")){
+        assign_flag = 1;
+      }
+
 		  else{
 		  	if(split_tokens[i].equals("declare")){
 		  		Predict.lastFour("declare");
@@ -251,6 +304,7 @@ public class Predict{
 			  			toAdd += "_" + split_tokens[j];
 			  		}
 		  		}
+          var_flag = 1;
 		  		toAdd = Predict.processId(toAdd);
 			  	Predict.lastFour(toAdd);
 			  	code += " " + toAdd;
@@ -262,10 +316,14 @@ public class Predict{
 	   	}
    	}
    	for(int i=0;i<split_tokens.length;i++){
-   		if(dot_flag == 1){
+   		if(dot_flag == 1 && var_flag == 1){
    			code += "(";
    			break;
    		}
+      else if(assign_flag == 1)
+      {  code += " = ";
+          break;
+        }
    	}
    	next_tokens = Predict.getNextToken(code);
 
@@ -348,6 +406,7 @@ public class Predict{
     String ret = "";
     Predict.code = hist;
     ret = Predict.generateProcessed(curr);
+    // System.out.println(ret);
     return ret;
   }
 
